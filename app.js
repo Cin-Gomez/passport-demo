@@ -21,7 +21,7 @@ const User = mongoose.model(
   })
 );
 
-//Production Grade Session Store
+//Production Grade Session Store - production application stores session data in a variety of ways here we use MongoDb
 const MongoDBStore = require('connect-mongodb-session')(session)
 
 var store = new MongoDBStore({
