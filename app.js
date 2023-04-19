@@ -114,5 +114,50 @@ app.get("/", (req, res) => {
     }
   }
 
+//ROUTES:
 
+//1.route for sign up form
+app.get("/sign-up", (req, res) => res.render("sign-up-form"));
+
+//2. app.post for the sign up form- to add users to our database
+app.post("/sign-up", async (req, res, next) => {
+    try {
+      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      await User.create({ username: req.body.username, password: hashedPassword });
+      res.redirect("/");
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+//3. route - if login is a success or failure
+app.post(
+    "/log-in",
+    passport.authenticate("local", {
+        successRedirect: "/",
+        failureRedirect: "/",
+        failureMessage: true
+      }));
+  
+
+  //4.route - logout route
+  app.get("/log-out", (req, res) => {
+    req.session.destroy(function (err) {
+      res.redirect("/");
+    });
+  });
+
+  //5. route - loads page for unauthorized user
+  app.get('/restricted', authMiddleware, (req, res) => {
+    if (!req.session.pageCount) {
+      req.session.pageCount = 1;
+    } else {
+      req.session.pageCount++;
+    }
+    res.render('restricted', { pageCount: req.session.pageCount });
+  })
+
+
+
+app.listen(3000, () => console.log("app listening on port 3000!"));
 
